@@ -80,3 +80,41 @@ gcc 764.c -o openfuck -lcrypto -lssl
 Entretanto, devido à incompatibilidade entre o código antigo do exploit e as bibliotecas modernas do OpenSSL presentes no Kali Linux, ocorreram diversos erros de compilação relacionados a funções criptográficas obsoletas, como RC4 e MD5.
 
 Diante dessas dificuldades, optou-se por continuar o processo de enumeração em busca de outros vetores de exploração disponíveis na máquina alvo.
+
+## 8. Enumeração do Serviço Samba
+
+Durante a análise inicial com o Nmap, foi identificado que a porta 139 (SMB) estava aberta, indicando a presença do serviço Samba.
+
+Para realizar uma enumeração mais detalhada desse serviço foi utilizada a ferramenta enum4linux.
+
+enum4linux 192.168.56.103
+
+A enumeração retornou diversos usuários existentes no sistema:
+
+- administrator
+- guest
+- krbtgt
+- domain admins
+- root
+- bin
+- nobody
+
+A descoberta desses usuários confirma que o serviço SMB está configurado e pode ser um possível vetor de exploração.
+
+## 9. Busca por Vulnerabilidades no Samba
+Sabendo que o serviço Samba estava ativo, foi realizada uma busca por vulnerabilidades conhecidas utilizando a ferramenta searchsploit.
+
+searchsploit samba
+
+Diversos exploits relacionados a versões antigas do Samba foram encontrados. Entre eles, um exploit de Remote Command Execution que explora vulnerabilidades presentes em versões antigas do serviço.
+
+Essas vulnerabilidades permitem que um atacante execute comandos remotamente no sistema alvo, potencialmente obtendo acesso privilegiado.
+## 10. Executando o exploit
+Executei o exploit utilizando o comando:
+
+./sambasploit -b 0 192.168.56.103
+
+consegui uma bind shell, depois verifiquei que eu já possuía acesso root
+Utilizei o comando mail para listar a caixa de entrada, e 1 para exibir o email “About Level 2”
+
+e assim eu obtive a flag final
